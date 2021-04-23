@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image" href="/img/favicon.ico">
+    <link rel="stylesheet" href="/public/css/tailwind.css">
+    <title>My Music App</title>
+</head>
+
+<body class="mx-8 font-body text-gray-800 bg-gray-50 dark:bg-gray-800">
+    <header class="flex items-center mx-5 py-4 border-black border-b dark:border-gray-500 justify-between">
+        <div class="flex items-center">
+            <img src="/img/logo.png" width="70rem" height="70rem" title="image du logo" alt="logo du site: double croche dorée dans un cercle noir">
+            <div class="ml-3">
+                <h1 class="text-4xl font-bold dark:text-gray-300" id="main-title">My AppMusic</h1>
+            </div>
+        </div>
+        <button class="ligth-theme-container" aria-label="mode-sombre" id="dark-theme-container">
+            <div class="ligth-theme-content" id="dark-theme">dark</div>
+        </button>
+    </header>
+    <main>
+        <section class="px-20 py-5" id="form-container">
+            <form class="mb-4 grid gap-6 grid-cols-2 lg:grid-cols-9" method="get" id="form" aria-label="formulaire">
+                <input type="text" title="saisir un artite, un titre ou un album" class="bg-gray-200  px-6 col-span-9 lg:col-span-6 input-form" id="main-input" autofocus required placeholder="  Je recherche ..." aria-required="true" aria-controls="form-container user-instruction msg-search-result">
+                <select class="bg-gray-200 col-span-6 lg:col-span-2 input-form " id="select-search">
+                    <option value="default" class="shadow"> Parmi : </option>
+                    <option value="artist">Artiste</option>
+                    <option value="title">Titre</option>
+                    <option value="release">Album</option>
+                    <option value="all">Tout</option>
+                </select>
+                <input type="submit" value="Rechercher" class="bg-gray-800 text-xs text-gray-100 col-span-3 lg:col-span-1 input-form cursor-pointer hover:text-gray-800 hover:bg-yellow-500 focus:bg-yellow-500 ring-2 ring-yellow-500" id='submit-btn' aria-label="rechercher">
+            </form>
+            <p class='text-center italic text-gray-700 dark:text-gray-300 text-base py-6' id="user-instruction">" Entrez un element de recherche et choisissez le type de selection "</p>
+        </section>
+
+        <div class="h-6">
+            <p class="px-20 mb-3 text-right dark:text-white" id="msg-search-result" style="display:none">Résultat de la recherche : <span class="nb-result" id="nb-result"></span></p>
+        </div>
+
+
+        <section class="sticky top-0 bg-gray-100 dark:bg-gray-800 py-3 mx-5 px-20 dark:text-yellow-500 border-black border-t border-b dark:border-gray-500" id="result-request-header">
+            <ul class="font-bold text-lg ul-displayed"id="head-list">
+                <li class="li-displayed" id="main-li">#</li>
+                <li class="li-displayed" id="main-li">Artiste</li>
+                <li class="li-displayed" id="main-li">Titre</li>
+                <li class="li-displayed" id="main-li">Album</li>
+                <li class="li-displayed" id="main-li">Action</li>
+            </ul>
+        </section>
+
+        <a class="tabindex='0'" href="#main-title">
+            <button class="mt-2 fixed bottom-10 right-6 tabindex='0'"><img class="opacity-0" id="arrow-return-up" src="/img/arrowUp.svg" width="30px"></button>
+        </a>
+
+        <section class="py-2 mx-5 mb-6 px-20 dark:text-yellow-500" id="result-request-body"> </section>
+
+        <div id='is-loading' class="is-loading" style="display:none"></div>
+
+        <aside class="fixed w-full z-5 h-full top-0 left-0 bg-black bg-opacity-80 flex items-center justify-center" id="modal-temp" style="display:none" aria-label="modal">
+            <section class="bg-gray-100 w-3/5 h-4/5 z-5 overflow-auto relative dark:bg-gray-400 dark:text-gray-200 flex items-center ">
+                <div id='loadingModal' class="is-loading " style="display:none"></div>
+            </section>
+        </aside>
+
+        <aside class="fixed w-full z-10 h-full top-0 left-0 flex items-center justify-center" id="modal-container" style="display:none" aria-label="modal">
+            <section class="bg-gray-100 z-10 w-3/5 h-4/5 overflow-auto px-perso20 pb-5 relative modal-box dark:bg-gray-400 dark:text-gray-200" id="modal-box">
+                <div class="bg-gray-100 dark:bg-gray-400 fixed z-50 h-28 border-black border-1 border-b" style="width:56%" id="header-modal-content">
+                <div class=" flex justify-between">
+                    <p class="font-thin italic text-xs text-yellow-700 pt-1">Touche 'Esc' ou 'Fermer' pour sortir</p>
+                    <div class="pt-1" id="btn-delete-container" aria-label="fermer"></div>
+                </div>
+                    <p class=" pt-4 font-semibold text-lg" id="header-modal"></p>
+                </div>
+                <div class="mt-28 px-8">
+                    <article id="call-information">
+                        <h2 class="text-3xl font-semibold text-center pt-6">Informations</h2>
+                        <div class="pt-8 pb-2 flex border-b border-gray-200 dark:border-gray-600 " id="modal-detail">
+                            <h3 class="text-lg font-bold mr-6">Titre - </h3><p class="text-lg " id="call-title"></p>
+                        </div>
+                        <div class="pt-8 pb-2 flex border-b border-gray-200 dark:border-gray-600 " id="modal-detail">
+                            <h3 class="text-lg font-bold mr-2">Artiste - </h3><p class="text-lg " id="call-artist"></p>
+                        </div>
+                        <div class="pt-8 pb-2 flex border-b border-gray-200 dark:border-gray-600 " id="modal-detail">
+                            <h3 class="text-lg font-bold mr-1">Albums  </h3><p class=" text-lg " id="call-release"></p>
+                        </div>
+                        <div class="pt-8 pb-2 flex border-b border-gray-200 dark:border-gray-600 " id="modal-detail">
+                            <h3 class="text-lg font-bold mr-1">Genres   </h3><p class=" text-lg " id="call-genre"></p>
+                        </div>
+                        <div class="pt-8 pb-2 flex border-b border-gray-200 dark:border-gray-600 " id="modal-detail">
+                            <h3 class="text-lg font-bold mr-4">Durée - </h3><p class=" text-lg " id="call-length"></p>
+                        </div>
+                        <div class="pt-8 pb-2 flex border-b border-gray-200 dark:border-gray-600 " id="modal-detail">
+                            <h3 class="text-lg font-bold mr-6">Note - </h3>
+                            
+                                <div class="rate-container w-perso150 h-perso30" id="rate-container">
+                                    <div class="rate-content h-perso30 bg-yellow-300" style="width:0%" id="rate-content">
+                                        <img class="star-rate w-perso150 h-perso30 absolute" id="star-rate">
+                                    </div>
+                                </div>
+                            
+                            <p class="text-sm pt-2" id="call-rating"></p>
+                        </div>
+                    </article>
+                    <article id="call-cover">
+                        <h2 class="text-3xl font-semibold text-center mt-4 mb-8">Covert Arts</h2>
+                        <div class="cover-content grid grid-cols-2 gap-1" id="cover-content">
+                            <p class="msg-error-modal col-span-2 lg:col-span-3" id="msg-error-modal"></p>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </aside>
+
+        <p class="msg-end-result mb-4 border-2 border-yellow-500 rounded-lg text-center dark:text-gray-100" id="msg-end-result" style="display:none" ></p>
+
+    </main>
+
+    <script src='/src/modalBox.js'></script>
+    <script src='/src/getDataApi.js'></script>
+    <script src='/src/dom.js'></script>
+    <script src='/src/main.js'></script>
+    
+</body>
+</html>
